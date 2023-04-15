@@ -27,9 +27,15 @@
 
 #include "cJSON.h"
 
+#include "mqtt.h"
+
 #define WIFI_CONNECTION_MAXIMUM_RETRY 3
 #define INVALID_REASON                255
 #define INVALID_RSSI                  -128
+
+#define MQTT_JSON_BROKER_ADDRESS "brokerAddress"
+#define MQTT_JSON_USERNAME "userName"
+#define MQTT_JSON_PASSWORD "password"
 
 static void blufi_event_callback(esp_blufi_cb_event_t event, esp_blufi_cb_param_t *param);
 
@@ -344,9 +350,32 @@ static esp_blufi_callbacks_t blufi_callbacks = {
     .checksum_func = blufi_crc_checksum,
 };
 
-static handle_mqtt_config(cJSON* root)
+static void handle_mqtt_config(cJSON* root)
 {
+    cJSON* broker_address_json = cJSON_GetObjectItem(root, MQTT_JSON_BROKER_ADDRESS);
+    if (!broker_address_json)
+    {
+        BLUFI_ERROR("No %s element in received JSON object", MQTT_JSON_BROKER_ADDRESS);
+        return;
+    }
+    
+    cJSON* username_json = cJSON_GetObjectItem(root, MQTT_JSON_USERNAME);
+    if (!username_json)
+    {
+        BLUFI_ERROR("No %s element in received JSON object", MQTT_JSON_USERNAME);
+        return;
+    }
+    
+    cJSON* password_json = cJSON_GetObjectItem(root, MQTT_JSON_PASSWORD);
+    if (!password_json)
+    {
+        BLUFI_ERROR("No %s element in received JSON object", MQTT_JSON_PASSWORD);
+        return;
+    }
 
+    BLUFI_INFO("Received broker_address: %s\nusername: %s\npassword: %s", broker_address_json->valuestring, username_json->valuestring, password_json->valuestring);
+
+    try_save_mqtt_config(broker_address_json->valuestring, username_json->valuestring, password_json->valuestring);
 }
 
 static void handle_custom_message(uint8_t* data, uint32_t data_len)
@@ -375,6 +404,7 @@ static void handle_custom_message(uint8_t* data, uint32_t data_len)
         break;
     }
     
+    cJSON_free(root);
     free(msg);
 }
 
