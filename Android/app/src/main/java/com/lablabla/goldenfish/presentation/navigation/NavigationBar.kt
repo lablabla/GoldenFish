@@ -14,34 +14,33 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import androidx.navigation.NavOptionsBuilder
 import com.lablabla.goldenfish.presentation.NavGraphs
 import com.lablabla.goldenfish.presentation.appCurrentDestinationAsState
 import com.lablabla.goldenfish.presentation.destinations.Destination
 import com.lablabla.goldenfish.presentation.startAppDestination
+import com.ramcosta.composedestinations.navigation.navigate
 import com.ramcosta.composedestinations.navigation.navigateTo
 
-
 @Composable
-fun BottomNavigationBar(
+fun NavigationBar(
     navController: NavController,
-    modifier: Modifier = Modifier,
-) {
-
-    val currentDestination: Destination? = navController.appCurrentDestinationAsState().value
-        ?: NavGraphs.goldenFishBottom.startAppDestination
+    modifier: Modifier = Modifier,) {
+    val currentDestination: Destination = navController.appCurrentDestinationAsState().value
+        ?: NavGraphs.goldenFishScreen.startAppDestination
     BottomNavigation(
         modifier = modifier,
         backgroundColor = Color.DarkGray,
         elevation = 5.dp
     ) {
-        BottomBarDestination.values().forEach { destination ->
+        GoldenFishDestinations.values().forEach { destination ->
             val selected = currentDestination == destination.direction
             BottomNavigationItem(
                 selected = selected,
                 onClick = {
-                    navController.navigateTo(destination.direction) {
+                    navController.navigate(destination.direction, fun NavOptionsBuilder.() {
                         launchSingleTop = true
-                    }
+                    })
                 },
 
                 selectedContentColor = Color.Green,

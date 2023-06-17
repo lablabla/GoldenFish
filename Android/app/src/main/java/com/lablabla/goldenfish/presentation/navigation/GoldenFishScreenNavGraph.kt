@@ -3,6 +3,6 @@ package com.lablabla.goldenfish.presentation.navigation
 import com.ramcosta.composedestinations.annotation.NavGraph
 
 @NavGraph
-annotation class GoldenFishMainNavGraph(
+annotation class GoldenFishScreenNavGraph(
     val start: Boolean = false
 )

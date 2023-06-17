@@ -9,7 +9,7 @@ import androidx.compose.material.Scaffold
 import androidx.compose.ui.Modifier
 import androidx.navigation.compose.rememberNavController
 import com.lablabla.goldenfish.presentation.NavGraphs
-import com.lablabla.goldenfish.presentation.navigation.BottomNavigationBar
+import com.lablabla.goldenfish.presentation.navigation.NavigationBar
 import com.lablabla.goldenfish.ui.theme.GoldenFishTheme
 import com.ramcosta.composedestinations.DestinationsNavHost
 import dagger.hilt.android.AndroidEntryPoint
@@ -23,11 +23,15 @@ class MainActivity : ComponentActivity() {
             GoldenFishTheme {
                 val navController = rememberNavController()
                 Scaffold(
-                    modifier = Modifier.fillMaxSize()
+                    modifier = Modifier.fillMaxSize(),
+                    bottomBar = {
+                        NavigationBar(navController = navController)
+                    }
+                
                 ) {
                     DestinationsNavHost(
                         navController = navController,
-                        navGraph = NavGraphs.goldenFishMain
+                        navGraph = NavGraphs.goldenFishScreen
                     )
                 }
             }
